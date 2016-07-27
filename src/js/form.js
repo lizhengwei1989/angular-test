@@ -3,22 +3,26 @@
  */
 var userInfoModule=angular.module('UserInfoModule',[]);
 userInfoModule.controller('UserInfoCtrl',['$scope',function($scope){
-  $scope.userInfo=$scope.default={
+  $scope.userInfo={
       email:'522676139@qq.com',
       password:'zachary',
       autoLogin:true
   };
-  $scope.getFormData=function(){
-      console.log($scope.userInfo);
+  $scope.login=function(){
+      window.location.href="./list.html";
   };
   $scope.setFormData=function(){
       $scope.userInfo={
           email:'zachary1989@gmail.com',
-          password:'zachaaaay',
+          password:'zachary',
           autoLogin:false
       }
   };
   $scope.reset=function(){
-      $scope.userInfo=$scope.default;
+      $scope.userInfo={
+          email:'522676139@qq.com',
+          password:'zachary',
+          autoLogin:true
+      };
   }
 }])

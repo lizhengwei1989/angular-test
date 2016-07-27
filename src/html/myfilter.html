@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="en" ng-app="MyFilter">
+<head>
+    <meta charset="UTF-8">
+    <title>filter</title>
+    <link rel="stylesheet" href="../framework/bootstrap/css/bootstrap.min.css">
+    <script src="../framework/angular/angular.min.js"></script>
+    <script>
+        var myFilter=angular.module('MyFilter',[]);
+        myFilter.filter('filter1',function(){
+            return function(item){
+                return item + '@@@@@@@@@@@@@@';
+            }
+        });
+    </script>
+</head>
+<body>
+    {{'李正伟'|filter1}}
+</body>
+</html>
