@@ -3,13 +3,66 @@
 <head>
     <meta charset="UTF-8">
     <title>bookstore</title>
+    <link rel="stylesheet" href="../framework/bootstrap/css/bootstrap.min.css">
     <script src="../framework/angular/angular.min.js"></script>
-    <script src="../framework/angular/angular-ui-route.js"></script>
+    <script src="../framework/angular/angular-ui-router.js"></script>
     <script src="../framework/angular/angular-animate.min.js"></script>
-    <script src="../js/app.js"></script>
-    <script src="../js/controllers.js"></script>
+    <script src="../js/index.js"></script>
 </head>
 <body>
-    <div ng-view></div>
+    <div class="panel panel-primary">
+        <div class="panel-heading">
+            <div class="panel-title">添加书籍</div>
+        </div>
+        <div class="panel-body" ng-controller="BookInfoCtrl">
+            <div class="row">
+                <div class="col-md-12">
+                    <form role="form" class="form-horizontal" name="infoForm" novalidate>
+                        <div class="form-group">
+                            <label class="col-md-2 control-label">
+                                作者:
+                            </label>
+                            <div class="col-md-10">
+                                <input type="text" class="form-control" placeholder="请输入作者名字" ng-model="bookInfo.author" required>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-md-2 control-label">
+                                书名:
+                            </label>
+                            <div class="col-md-10"
+                            ><input type="text" class="form-control" placeholder="汉字、英文均可" ng-model="bookInfo.bookName" required>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="col-md-offset-2 col-xs-6 col-md-3">
+                                <button class="btn btn-default" ng-disabled="isAdd" ng-click="add()">添加</button>
+                            </div>
+                            <div class="col-xs-6 col-md-3">
+                                <button class="btn btn-default" ng-click="reset()">重置</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            <div class="row">
+                <!--<list list-item="{{bookInfos}}"></list>-->
+                <div class="col-md-offset-2 col-md-10" ng-repeat="bookInfo in bookInfos">
+                    <div class="row">
+                        <div class="col-md-2">
+                            {{bookInfo.author}}
+                        </div>
+                        <div class="col-md-6">
+                            {{bookInfo.bookName}}
+                        </div>
+                        <div class="col-md-2">
+                            <a href="javascript:void(0)" ng-click="edit(bookInfo.bookId)">编辑</a>
+                            <a href="javascript:void(0)" ng-click="del(bookInfo.bookId)">删除</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 </body>
 </html>
