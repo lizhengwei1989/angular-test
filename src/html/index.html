@@ -7,7 +7,7 @@
     <script src="../framework/angular/angular.min.js"></script>
     <script src="../framework/angular/angular-ui-router.js"></script>
     <script src="../framework/angular/angular-animate.min.js"></script>
-    <script src="../js/index.js"></script>
+    <script src="../../src/js/index.js"></script>
 </head>
 <body>
     <div class="panel panel-primary">
@@ -23,7 +23,7 @@
                                 作者:
                             </label>
                             <div class="col-md-10">
-                                <input type="text" class="form-control" placeholder="请输入作者名字" ng-model="bookInfo.author" required>
+                                <input type="text" class="form-control" placeholder="请输入作者名字" ng-model="bookInfo.author">
                             </div>
                         </div>
                         <div class="form-group">
@@ -31,15 +31,26 @@
                                 书名:
                             </label>
                             <div class="col-md-10"
-                            ><input type="text" class="form-control" placeholder="汉字、英文均可" ng-model="bookInfo.bookName" required>
+                            ><input type="text" class="form-control" placeholder="汉字、英文均可" ng-model="bookInfo.bookName">
                             </div>
                         </div>
                         <div class="form-group">
-                            <div class="col-md-offset-2 col-xs-6 col-md-3">
+                            <label class="col-md-2 control-label">
+                                检索:
+                            </label>
+                            <div class="col-md-10">
+                                <input type="text" class="form-control" placeholder="作者名字或书的名字的部分即可" ng-model="bookInfo.search">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="col-md-offset-2 col-xs-4 col-md-3">
                                 <button class="btn btn-default" ng-disabled="isAdd" ng-click="add()">添加</button>
                             </div>
-                            <div class="col-xs-6 col-md-3">
+                            <div class="col-xs-4 col-md-3">
                                 <button class="btn btn-default" ng-click="reset()">重置</button>
+                            </div>
+                            <div class="col-xs-4 col-md-3">
+                                <button class="btn btn-default" ng-click="search()">检索</button>
                             </div>
                         </div>
                     </form>
@@ -47,19 +58,19 @@
             </div>
             <div class="row">
                 <!--<list list-item="{{bookInfos}}"></list>-->
-                <div class="col-md-offset-2 col-md-10" ng-repeat="bookInfo in bookInfos">
-                    <div class="row">
-                        <div class="col-md-2">
-                            {{bookInfo.author}}
-                        </div>
-                        <div class="col-md-6">
-                            {{bookInfo.bookName}}
-                        </div>
-                        <div class="col-md-2">
-                            <a href="javascript:void(0)" ng-click="edit(bookInfo.bookId)">编辑</a>
-                            <a href="javascript:void(0)" ng-click="del(bookInfo.bookId)">删除</a>
-                        </div>
-                    </div>
+                <div class="col-md-offset-2 col-md-8 ">
+                    <table class="table table-striped table-bordered table-hover">
+                        <tr class="row" ng-repeat="bookInfo in bookInfos">
+                            <td class="col-md-2" ng-bind-html="bookInfo.author|to_trusted">
+                            </td>
+                            <td class="col-md-8" ng-bind-html="bookInfo.bookName|to_trusted">
+                            </td>
+                            <td class="col-md-2">
+                                <a href="javascript:void(0)" ng-click="edit(bookInfo.bookId)">编辑</a>
+                                <a href="javascript:void(0)" ng-click="del(bookInfo.bookId)">删除</a>
+                            </td>
+                        </tr>
+                     </table>
                 </div>
             </div>
         </div>

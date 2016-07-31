@@ -2,10 +2,49 @@
  * Created by lizhengwei on 2016/7/29.
  */
 var app=angular.module('bookStoreApp',[]);
+app.filter('to_trusted',['$sce',function($sce){
+    return function (text) {
+        return $sce.trustAsHtml(text);
+    }
+}]);
+app.service('deepCopyService',function(){
+    return function (obj) {
+        var result={};
+        for (var key in obj) {
+            result[key] = typeof obj[key]==='object'?arguments.callee(obj[key]):obj[key];
+        }
+        return result;
+    }
+});
+app.service('cutHtmlService',function(){
+    return function (string) {
+        return string.replace(/<[^>]+>/g,'');
+    }
+});
 app.service('addItemService',function(){
     return function(infos,info){
         infos.unshift(info);
         return infos;
+    };
+});
+app.service('searchItemsService',function(){
+    return function(infos,search){
+        var tmp=[];
+        infos.forEach(function(v,i){
+            if(v.author.indexOf(search)!=-1||v.bookName.indexOf(search)!=-1){
+                var arrAuthor=v.author.split(search);
+                var arrBookName=v.bookName.split(search);
+                if(arrAuthor){
+                    v.author=arrAuthor.join('<span class="text-danger">'+search+'</span>');
+                }
+                if(arrBookName){
+                    v.bookName=arrBookName.join('<span class="text-danger">'+search+'</span>');
+                }
+                tmp.push(v);
+            }
+        });
+        return tmp;
+
     };
 });
 app.service('getBookIdService',function(){
@@ -26,12 +65,15 @@ app.service('delItemService',function(){
         return infos;
     };
 });
-app.service('editItemService',function(){
+app.service('editItemService',function(cutHtmlService,deepCopyService){
     return function(infos,bookId){
         var obj={};
         infos.forEach(function(v,i){
             if(v.bookId==bookId){
                 obj=v;
+                //var vv=deepCopyService(v);
+                obj.bookName=cutHtmlService(v.bookName);
+                obj.author=cutHtmlService(v.author);
             }
         });
         return obj;
@@ -48,12 +90,13 @@ app.directive('list',function(){
         controller:'BookInfoCtrl'
     }
 });
-app.controller('BookInfoCtrl',function($scope,addItemService,getBookIdService,delItemService,editItemService){
+app.controller('BookInfoCtrl',function($scope,addItemService,getBookIdService,delItemService,editItemService,searchItemsService,deepCopyService){
     $scope.isAdd=false;
     $scope.bookInfo={
         bookName:'',
         author:'',
-        bookId:''
+        bookId:'',
+        search:''
     };
     $scope.bookInfos=[
         {
@@ -72,6 +115,18 @@ app.controller('BookInfoCtrl',function($scope,addItemService,getBookIdService,de
             bookId:12
         }
     ];
+    $scope.copyInfos=$scope.bookInfos.concat();
+    $scope.search=function(){
+        if($scope.bookInfo.search==''){
+            $scope.bookInfos=$scope.copyInfos;
+            //alert('请输入检索关键字!');
+            return;
+        }
+        $scope.isAdd=false;
+
+        $scope.bookInfos=searchItemsService($scope.copyInfos,$scope.bookInfo.search);
+
+    }
     $scope.reset=function(){
         $scope.isAdd=false;
         $scope.bookInfo={
@@ -81,12 +136,13 @@ app.controller('BookInfoCtrl',function($scope,addItemService,getBookIdService,de
         };
     }
     $scope.edit=function(bookId){
-        var item=editItemService($scope.bookInfos,bookId);
-        $scope.bookInfo=item;
+        $scope.bookInfo=editItemService($scope.bookInfos,bookId);
         $scope.isAdd=true;
+        $scope.copyInfos=$scope.bookInfos.concat();
     }
     $scope.del=function(bookId){
         delItemService($scope.bookInfos,bookId);
+        $scope.copyInfos=$scope.bookInfos.concat();
     }
     $scope.add=function(){
         if($scope.bookInfo.author==''){
@@ -106,6 +162,7 @@ app.controller('BookInfoCtrl',function($scope,addItemService,getBookIdService,de
             author:'',
             bookId:''
         };
+        $scope.copyInfos=$scope.bookInfos.concat();
     };
 
 });
