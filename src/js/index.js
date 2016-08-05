@@ -16,7 +16,7 @@ app.service('deepCopyService',function(){
         return result;
     }
 });
-app.service('cutHtmlService',function(){
+app.factory('cutHtmlService',function(){
     return function (string) {
         return string.replace(/<[^>]+>/g,'');
     }
@@ -65,13 +65,12 @@ app.service('delItemService',function(){
         return infos;
     };
 });
-app.service('editItemService',function(cutHtmlService,deepCopyService){
+app.service('editItemService',function(cutHtmlService){
     return function(infos,bookId){
         var obj={};
-        infos.forEach(function(v,i){
+        infos.forEach(function(v){
             if(v.bookId==bookId){
                 obj=v;
-                //var vv=deepCopyService(v);
                 obj.bookName=cutHtmlService(v.bookName);
                 obj.author=cutHtmlService(v.author);
             }
@@ -90,7 +89,7 @@ app.directive('list',function(){
         controller:'BookInfoCtrl'
     }
 });
-app.controller('BookInfoCtrl',function($scope,addItemService,getBookIdService,delItemService,editItemService,searchItemsService,deepCopyService){
+app.controller('BookInfoCtrl',function($scope,$timeout,addItemService,getBookIdService,delItemService,editItemService,searchItemsService,cutHtmlService){
     $scope.isAdd=false;
     $scope.bookInfo={
         bookName:'',
@@ -116,6 +115,10 @@ app.controller('BookInfoCtrl',function($scope,addItemService,getBookIdService,de
         }
     ];
     $scope.copyInfos=$scope.bookInfos.concat();
+    $scope.$watch('bookInfo.search',function(v){
+        $scope.reset();
+        $scope.bookInfos=searchItemsService($scope.copyInfos,v);
+    });
     $scope.search=function(){
         if($scope.bookInfo.search==''){
             $scope.bookInfos=$scope.copyInfos;
@@ -123,7 +126,6 @@ app.controller('BookInfoCtrl',function($scope,addItemService,getBookIdService,de
             return;
         }
         $scope.isAdd=false;
-
         $scope.bookInfos=searchItemsService($scope.copyInfos,$scope.bookInfo.search);
 
     }
@@ -134,6 +136,15 @@ app.controller('BookInfoCtrl',function($scope,addItemService,getBookIdService,de
             author:'',
             bookId:''
         };
+        var tt=$scope.copyInfos.concat();
+        var tmp=[];
+        tt.forEach(function(v){
+            for(var i in v){
+                if(i!='bookId')v[i]=cutHtmlService(v[i]);
+            }
+            tmp.push(v);
+        });
+        $scope.bookInfos=tmp;
     }
     $scope.edit=function(bookId){
         $scope.bookInfo=editItemService($scope.bookInfos,bookId);

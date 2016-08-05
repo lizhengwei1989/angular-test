@@ -29,6 +29,4 @@ myServiceApp.controller('ServiceController',['$scope','$timeout','userListServic
             },350)
         }
     })
-
-
 }]);
